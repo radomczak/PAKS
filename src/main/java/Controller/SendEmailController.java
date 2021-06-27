@@ -3,12 +3,8 @@ package Controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 
-public class SendEmailController {
-
-    private Stage stage;
-    private ConnectionManager connection;
+public class SendEmailController extends Controller {
 
     @FXML
     private Button goBackButton;
@@ -19,8 +15,4 @@ public class SendEmailController {
     @FXML
     private TextArea mailContent;
 
-    public void passConnectionAndStage(ConnectionManager connection, Stage stage) {
-        this.connection = connection;
-        this.stage = stage;
-    }
 }

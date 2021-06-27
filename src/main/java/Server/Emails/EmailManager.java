@@ -40,6 +40,8 @@ public class EmailManager {
         }
     }
 
+
+
     private String[] getEmailDataFromString(String x) {
         String[] data = new String[3];
         StringBuilder sender = new StringBuilder();
@@ -84,11 +86,10 @@ public class EmailManager {
         return returnSet;
     }
 
-    public void sendEmail(Email email) {
-        if (email!=null) {
-            emailsToSend.get(email.getReceiver()).add(email);
-            exportEmail(email);
-        }
+    public void sendEmail(String emailAsString) {
+        Email email = createEmailUsingData(getEmailDataFromString(emailAsString));
+        emailsToSend.get(email.getReceiver()).add(email);
+        exportEmail(email);
     }
 
     private void exportEmail(Email email) {

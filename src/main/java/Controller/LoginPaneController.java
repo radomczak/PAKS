@@ -5,20 +5,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class LoginPaneController {
-
-    private Stage stage;
-    private ConnectionManager connection;
+public class LoginPaneController extends Controller{
 
     @FXML
     private Button loginButton;
@@ -47,7 +40,7 @@ public class LoginPaneController {
             connection.out.println(pass);
             String result = getServerResponse();
 
-            if(result.charAt(1)=='t') {
+            if(result.charAt(1)=='s') {
                 loadClientPaneView();
             }
             showServerResponse(result.substring(2));
@@ -62,7 +55,7 @@ public class LoginPaneController {
 
             String result = getServerResponse();
 
-            if(result.charAt(1)=='t') {
+            if(result.charAt(1)=='s') {
                 loadClientPaneView();
             }
             showServerResponse(result.substring(2));
@@ -82,39 +75,6 @@ public class LoginPaneController {
 
         Scene scene = new Scene(clientPane);
         stage.setScene(scene);
-    }
-
-    private String getServerResponse() {
-        String result = null;
-        while (result == null) {
-            try {
-                result = connection.in.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-    private void showServerResponse(String response) {
-        final Stage dialog = new Stage();
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        AnchorPane serverInfo = null;
-        try {
-            serverInfo = FXMLLoader.load(getClass().getResource("/fxml/ServerInfoWindow.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Label label = (Label) serverInfo.getChildren().get(1);
-        label.setText(response);
-        Scene dialogScene = new Scene(serverInfo);
-        dialog.setScene(dialogScene);
-        dialog.show();
-    }
-
-    public void passConnectionAndStage(ConnectionManager connection, Stage stage) {
-        this.connection = connection;
-        this.stage = stage;
     }
 
 }

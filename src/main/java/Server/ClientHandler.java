@@ -1,20 +1,22 @@
 package Server;
 
+import Model.Email;
 import Server.Emails.EmailManager;
-import Server.Users.UserCredentialsManager;
 import Server.Exception.UserException;
+import Server.Users.UserCredentialsManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Set;
 
 public class ClientHandler extends Thread {
 
     private final Socket socket;
-    private UserCredentialsManager credentialsManager;
-    private EmailManager emailManager;
+    private final UserCredentialsManager credentialsManager;
+    private final EmailManager emailManager;
     private BufferedReader in;
     private PrintWriter out;
     private String client = null;
@@ -49,16 +51,16 @@ public class ClientHandler extends Thread {
     private void handleRequest(String request) {
         char requestType = request.charAt(0);
         switch (requestType) {
-            case 'v': {
+            case 'v': {         //verification request, subcategories l-login (check password), r-register
                 handleVRequest(request.substring(1));
                 break;
             }
-            case 's' : {
-                handleSRequest(request.substring(1));
+            case 'r' : {            //email request r-receive emails(refresh button)
+                handleRRequest();
                 break;
             }
-            case 'e' : {            //email request, subcategories r-receive emails(refresh button), s-sent email
-                handleERequest(request.substring(1));
+            case 's' : {            //email request s-sent
+                handleSRequest();
                 break;
             }
             default: {
@@ -91,7 +93,7 @@ public class ClientHandler extends Thread {
             e.printStackTrace();
         }
         if(condition) {
-            out.println("itWelcome " + client);
+            out.println("isWelcome " + client);
         } else {
             out.println("ifInvalid login or password");
         }
@@ -117,17 +119,48 @@ public class ClientHandler extends Thread {
             e.printStackTrace();
         }
         if(condition) {
-            out.println("itWelcome our new user " + client);
+            out.println("isWelcome our new user " + client);
         } else {
             out.println("ifUser with this login already exists");
         }
     }
 
-    private void handleSRequest(String request) {
-
+    private void handleSRequest() {
+        String emailAsText = null;
+        String[] data = null;
+        String receiver = null;
+        try {
+            emailAsText = in.readLine();
+            data = emailAsText.split(";");
+            receiver = data[1];
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(credentialsManager.getUsers().containsKey(receiver)) {
+            synchronized (emailManager) {
+                emailManager.sendEmail(emailAsText);
+            }
+            out.println("isMail was sent");
+        } else {
+            out.println("ifWe couldn't find user with name " + receiver);
+        }
     }
 
-    private void handleERequest(String request) {
+    private void handleRRequest() {
+        Set<Email> emailsSet = null;
+        synchronized (emailManager) {
+            emailsSet = emailManager.getEmailsFor(client);
+        }
 
+        if(emailsSet.size()>0) {
+            StringBuilder emailsAsText = new StringBuilder();
+            for (Email e : emailsSet) {
+                emailsAsText.append(e.textVersion());
+                emailsAsText.append("\r");
+            }
+            out.println("is"+emailsAsText.toString());
+        } else {
+            out.println("if");
+        }
     }
 }

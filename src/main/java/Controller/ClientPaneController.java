@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Email;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,14 +9,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ClientPaneController {
-
-    private Stage stage;
-    private ConnectionManager connection;
+public class ClientPaneController extends Controller{
 
     @FXML
     private Button write;
@@ -38,6 +37,10 @@ public class ClientPaneController {
     @FXML
     private TableView<?> Content;
 
+    List<Email> inboxEmails = new ArrayList<>();
+    List<Email> sentEmails = new ArrayList<>();
+
+
     public void initialize()
     {
         addEvents();
@@ -46,6 +49,26 @@ public class ClientPaneController {
     private void addEvents() {
         logout.addEventHandler(ActionEvent.ACTION, actionEvent -> {
             loadLoginPaneView();
+        });
+
+        refresh.addEventHandler(ActionEvent.ACTION, actionEvent -> {
+            connection.out.println("r");
+            String serverResponse = getServerResponse();
+            if(serverResponse.charAt(1)=='s') {
+                int i = checkNumberOfEmailsFromString(serverResponse.substring(2));
+                unreadCounter.setText(""+i);
+            } else {
+                showServerResponse("You didn't receive any emails");
+            }
+        });
+
+        inbox.addEventHandler(ActionEvent.ACTION, actionEvent -> {
+            unreadCounter.setText("0");
+            loadContentFor(inboxEmails);
+        });
+
+        sent.addEventHandler(ActionEvent.ACTION, actionEvent -> {
+            loadContentFor(sentEmails);
         });
     }
 
@@ -65,8 +88,11 @@ public class ClientPaneController {
         stage.setScene(scene);
     }
 
-    public void passConnectionAndStage(ConnectionManager connection, Stage stage) {
-        this.connection = connection;
-        this.stage = stage;
+    private int checkNumberOfEmailsFromString(String emails) {
+        return 2;
+    }
+
+    private void loadContentFor(List<Email> emails) {
+
     }
 }
