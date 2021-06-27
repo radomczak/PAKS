@@ -1,4 +1,4 @@
-package Server.Users;
+package Server.Exception;
 
 public class UserException extends Exception {
     public UserException() {

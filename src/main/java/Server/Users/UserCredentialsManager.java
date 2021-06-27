@@ -1,5 +1,8 @@
 package Server.Users;
 
+import Server.Exception.DataImportException;
+import Server.Exception.UserException;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;

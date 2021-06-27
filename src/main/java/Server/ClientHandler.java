@@ -1,7 +1,8 @@
 package Server;
 
+import Server.Emails.EmailManager;
 import Server.Users.UserCredentialsManager;
-import Server.Users.UserException;
+import Server.Exception.UserException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,13 +14,15 @@ public class ClientHandler extends Thread {
 
     private final Socket socket;
     private UserCredentialsManager credentialsManager;
+    private EmailManager emailManager;
     private BufferedReader in;
     private PrintWriter out;
     private String client = null;
 
-    public ClientHandler(Socket socket,UserCredentialsManager credentialsManager) {
+    public ClientHandler(Socket socket,UserCredentialsManager credentialsManager, EmailManager emailManager) {
         this.socket = socket;
         this.credentialsManager = credentialsManager;
+        this.emailManager = emailManager;
     }
 
     public void run() {
@@ -52,6 +55,10 @@ public class ClientHandler extends Thread {
             }
             case 's' : {
                 handleSRequest(request.substring(1));
+                break;
+            }
+            case 'e' : {            //email request, subcategories r-receive emails(refresh button), s-sent email
+                handleERequest(request.substring(1));
                 break;
             }
             default: {
@@ -117,6 +124,10 @@ public class ClientHandler extends Thread {
     }
 
     private void handleSRequest(String request) {
+
+    }
+
+    private void handleERequest(String request) {
 
     }
 }

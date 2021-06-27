@@ -30,6 +30,9 @@ public class ClientPaneController {
     private Button sent;
 
     @FXML
+    private Button refresh;
+
+    @FXML
     private Button logout;
 
     @FXML

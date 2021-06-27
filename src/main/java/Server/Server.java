@@ -1,5 +1,6 @@
 package Server;
 
+import Server.Emails.EmailManager;
 import Server.Users.UserCredentialsManager;
 
 import java.io.PrintWriter;
@@ -18,15 +19,15 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
         UserCredentialsManager credentialsManager = new UserCredentialsManager();
+        EmailManager emailManager = new EmailManager(credentialsManager);
         System.out.println("The mail server is running.");
         ServerSocket socket = new ServerSocket(PORT);
         try {
             while (true) {
-                new ClientHandler(socket.accept(),credentialsManager).start();
+                new ClientHandler(socket.accept(),credentialsManager,emailManager).start();
             }
         } finally {
             socket.close();
-
         }
     }
 }
