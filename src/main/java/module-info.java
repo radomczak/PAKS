@@ -4,6 +4,5 @@ module PAKSProject {
     requires javafx.controls;
 
     exports Client to javafx.graphics;
-    opens Controller to javafx.fxml;
-
+    opens Controller to javafx.fxml, javafx.base;
 }

@@ -41,7 +41,7 @@
             <Label prefHeight="199.0" prefWidth="28.0" />
             <HBox prefHeight="40.0" prefWidth="100.0">
                <children>
-                  <Button fx:id="logout" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" prefWidth="111.0" text="Loguot" />
+                  <Button fx:id="logout" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" prefWidth="111.0" text="Logout" />
                </children>
             </HBox>
          </children>
@@ -50,12 +50,11 @@
    <right>
       <VBox prefHeight="360.0" prefWidth="505.0" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="Content" prefHeight="401.0" prefWidth="500.0">
-              <columns>
-                <TableColumn prefWidth="108.0" text="From" />
-                <TableColumn prefWidth="112.0" text="Title" />
-              </columns>
-            </TableView>
+            <TableView fx:id="Content" editable="true" prefHeight="401.0" prefWidth="500.0">
+               <columns>
+                  <TableColumn fx:id="clientTable" prefWidth="115.0" text="Column X" />
+                  <TableColumn fx:id="contentTable" prefWidth="384.0" text="Column X" />
+               </columns></TableView>
          </children>
       </VBox>
    </right>

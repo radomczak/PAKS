@@ -70,8 +70,10 @@ public class LoginPaneController extends Controller{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         ClientPaneController controller = loader.getController();
         controller.passConnectionAndStage(connection,stage);
+        controller.firstLoad();
 
         Scene scene = new Scene(clientPane);
         stage.setScene(scene);

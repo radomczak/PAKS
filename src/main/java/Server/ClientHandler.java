@@ -56,7 +56,7 @@ public class ClientHandler extends Thread {
                 break;
             }
             case 'r' : {            //email request r-receive emails(refresh button)
-                handleRRequest();
+                handleRRequest(request.substring(1));
                 break;
             }
             case 's' : {            //email request s-sent
@@ -127,7 +127,7 @@ public class ClientHandler extends Thread {
 
     private void handleSRequest() {
         String emailAsText = null;
-        String[] data = null;
+        String[] data;
         String receiver = null;
         try {
             emailAsText = in.readLine();
@@ -146,8 +146,14 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private void handleRRequest() {
-        Set<Email> emailsSet = null;
+    private void handleRRequest(String request) {
+        receiveInboxMails();
+        if (request.startsWith("s"))
+            receiveSentMails();
+    }
+
+    private void receiveInboxMails() {
+        Set<Email> emailsSet;
         synchronized (emailManager) {
             emailsSet = emailManager.getEmailsFor(client);
         }
@@ -156,7 +162,25 @@ public class ClientHandler extends Thread {
             StringBuilder emailsAsText = new StringBuilder();
             for (Email e : emailsSet) {
                 emailsAsText.append(e.textVersion());
-                emailsAsText.append("\r");
+                emailsAsText.append((char)30);
+            }
+            out.println("is"+emailsAsText.toString());
+        } else {
+            out.println("if");
+        }
+    }
+
+    private void receiveSentMails() {
+        Set<Email> emailsSet;
+        synchronized (emailManager) {
+            emailsSet = emailManager.getSentEmailsBy(client);
+        }
+
+        if(emailsSet.size()>0) {
+            StringBuilder emailsAsText = new StringBuilder();
+            for (Email e : emailsSet) {
+                emailsAsText.append(e.textVersion());
+                emailsAsText.append((char)30);
             }
             out.println("is"+emailsAsText.toString());
         } else {

@@ -5,10 +5,7 @@ import Server.Exception.DataImportException;
 import Server.Users.UserCredentialsManager;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class EmailManager {
     private UserCredentialsManager manager;
@@ -83,6 +80,15 @@ public class EmailManager {
     public Set<Email> getEmailsFor(String user) {
         Set<Email> returnSet = emailsToSend.get(user);
         emailsToSend.get(user).clear();
+        return returnSet;
+    }
+
+    public Set<Email> getSentEmailsBy(String user) {
+        Set<Email> returnSet = new HashSet<>();
+        for(Email email : emails) {
+            if(email.getSender().equals(user))
+            returnSet.add(email);
+        }
         return returnSet;
     }
 
