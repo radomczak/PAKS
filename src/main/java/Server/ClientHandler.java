@@ -157,7 +157,7 @@ public class ClientHandler extends Thread {
         synchronized (emailManager) {
             emailsSet = emailManager.getEmailsFor(client);
         }
-
+        
         if(emailsSet.size()>0) {
             StringBuilder emailsAsText = new StringBuilder();
             for (Email e : emailsSet) {

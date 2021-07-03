@@ -41,6 +41,7 @@ public class LoginPaneController extends Controller{
             String result = getServerResponse();
 
             if(result.charAt(1)=='s') {
+                user = login;
                 loadClientPaneView();
             }
             showServerResponse(result.substring(2));
@@ -56,6 +57,7 @@ public class LoginPaneController extends Controller{
             String result = getServerResponse();
 
             if(result.charAt(1)=='s') {
+                user = login;
                 loadClientPaneView();
             }
             showServerResponse(result.substring(2));

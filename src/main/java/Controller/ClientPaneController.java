@@ -8,12 +8,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,15 +49,10 @@ public class ClientPaneController extends Controller {
     @FXML
     private TableColumn<EmailRow, String> contentTable;
 
-    List<Email> inboxEmails = new ArrayList<>();
-    List<Email> sentEmails = new ArrayList<>();
-    private final ObservableList<EmailRow> dataInbox = FXCollections.observableArrayList(
-            new EmailRow("radek", "Whatever dude just send it to...."),
-            new EmailRow("radek", "Thanks dude")
-    );
-    private final ObservableList<EmailRow> dataSent = FXCollections.observableArrayList(
-            new EmailRow("Marlena", "Ok dude sending now")
-    );
+    List<Email> newInboxEmails = new ArrayList<>();
+    List<Email> newSentEmails = new ArrayList<>();
+    private final ObservableList<EmailRow> dataInbox = FXCollections.observableArrayList();
+    private final ObservableList<EmailRow> dataSent = FXCollections.observableArrayList();
 
     public void initialize() {
         addEvents();
@@ -84,7 +80,7 @@ public class ClientPaneController extends Controller {
                 stringEmailsInbox = serverResponse.substring(2).split(regex);
                 for (String email : stringEmailsInbox) {
                     Email e = createEmailFromString(email);
-                    inboxEmails.add(e);
+                    newInboxEmails.add(e);
                 }
                 newEmails = stringEmailsInbox.length;
                 unreadCounter.setText("" + newEmails);
@@ -93,13 +89,22 @@ public class ClientPaneController extends Controller {
             }
         });
 
-        inbox.addEventHandler(ActionEvent.ACTION, actionEvent -> {
-            loadContentFor(inboxEmails, "inbox");
+        inbox.addEventHandler(ActionEvent.ACTION, actionEvent -> loadContentFor(newInboxEmails, "inbox"));
+
+        sent.addEventHandler(ActionEvent.ACTION, actionEvent -> loadContentFor(newSentEmails, "sent"));
+
+        Content.setRowFactory( tv -> {
+            TableRow<EmailRow> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    EmailRow rowData = row.getItem();
+                    showEmailContent(rowData);
+                }
+            });
+            return row ;
         });
 
-        sent.addEventHandler(ActionEvent.ACTION, actionEvent -> {
-            loadContentFor(sentEmails, "sent");
-        });
+        write.addEventHandler(ActionEvent.ACTION, actionEvent -> writeMessage());
     }
 
     private void loadLoginPaneView() {
@@ -122,10 +127,20 @@ public class ClientPaneController extends Controller {
         clientTable.setCellValueFactory(new PropertyValueFactory<>("Client"));
         contentTable.setCellValueFactory(new PropertyValueFactory<>("Content"));
         if (type.equals("inbox")) {
+            clientTable.setText("From");
+            for(Email e : emails) {
+                dataInbox.add(new EmailRow(e,0));
+            }
             Content.setItems(dataInbox);
+            unreadCounter.setText("0");
         } else {
+            clientTable.setText("Sent to");
+            for(Email e : emails) {
+                dataSent.add(new EmailRow(e,1));
+            }
             Content.setItems(dataSent);
         }
+        clearEmailList(emails);
     }
 
     private void loginRefresh() {
@@ -142,7 +157,7 @@ public class ClientPaneController extends Controller {
             stringEmailsInbox = inbox.substring(2).split(regex);
             for (String email : stringEmailsInbox) {
                 Email e = createEmailFromString(email);
-                inboxEmails.add(e);
+                newInboxEmails.add(e);
             }
             newEmails = stringEmailsInbox.length;
             unreadCounter.setText("" + newEmails);
@@ -150,7 +165,7 @@ public class ClientPaneController extends Controller {
             stringEmailsSent = sent.substring(2).split(regex);
             for (String email : stringEmailsSent) {
                 Email e = createEmailFromString(email);
-                sentEmails.add(e);
+                newSentEmails.add(e);
             }
         }
         showServerResponse("You have " + newEmails + " new Emails");
@@ -181,13 +196,84 @@ public class ClientPaneController extends Controller {
         return new Email(data[0], data[1], data[2]);
     }
 
+    private void showEmailContent(EmailRow emailRow) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EmailContent.fxml"));
+        final Stage emailContent = new Stage();
+        emailContent.initModality(Modality.APPLICATION_MODAL);
+        VBox emailContentPane = null;
+        try {
+            emailContentPane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        HBox hBox = (HBox) emailContentPane.getChildren().get(0);
+        Label labelClient = (Label) hBox.getChildren().get(0);
+        if(emailRow.type == 0) {
+            labelClient.setText("From: ");
+        } else {
+            labelClient.setText("To: ");
+        }
+
+        String client = emailRow.getClient();
+        TextField textField = (TextField) hBox.getChildren().get(1);
+        textField.setText(client);
+
+        TextArea textArea = (TextArea) emailContentPane.getChildren().get(1);
+        String content = emailRow.email.getMessage();
+        textArea.setText(content.replace('\r','\n'));
+
+        Scene emailContentScene = new Scene(emailContentPane);
+        emailContent.setScene(emailContentScene);
+        emailContent.show();
+    }
+
+    private void clearEmailList(List<Email> emailsToClear) {
+        emailsToClear.clear();
+    }
+
+    private void writeMessage() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SendEmail.fxml"));
+        final Stage sendEmail = new Stage();
+        sendEmail.initModality(Modality.APPLICATION_MODAL);
+        VBox sendEmailPane = null;
+        try {
+            sendEmailPane = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        SendEmailController controller = loader.getController();
+        controller.passConnectionAndStage(connection, sendEmail);
+        controller.setClientController(this);
+
+        Scene sendEmailScene = new Scene(sendEmailPane);
+        sendEmail.setScene(sendEmailScene);
+        sendEmail.show();
+    }
+
+    public void addNewlySentMessage(Email email) {
+        newSentEmails.add(email);
+    }
+
     public class EmailRow {
         private SimpleStringProperty Client;
         private SimpleStringProperty Content;
+        private Email email;
+        private int type;
 
-        public EmailRow(String client, String content) {
-            this.Client = new SimpleStringProperty(client);
-            this.Content = new SimpleStringProperty(content);
+        public EmailRow(Email email, int type) {
+            if(type == 0) //0 = inbox
+                this.Client = new SimpleStringProperty(email.getSender());
+            else    // 1 = sent
+                this.Client = new SimpleStringProperty(email.getReceiver());
+
+            String emailContent = email.getMessage().replace("\r"," ");
+            if(emailContent.length()>20)
+                this.Content = new SimpleStringProperty(emailContent.substring(0,20).concat("..."));
+            else
+                this.Content = new SimpleStringProperty(emailContent);
+            this.email = email;
+            this.type = type;
         }
 
         public String getClient() {
@@ -206,4 +292,5 @@ public class ClientPaneController extends Controller {
             Content.set(content);
         }
     }
+
 }

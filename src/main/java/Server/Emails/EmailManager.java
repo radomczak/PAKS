@@ -78,7 +78,7 @@ public class EmailManager {
     }
 
     public Set<Email> getEmailsFor(String user) {
-        Set<Email> returnSet = emailsToSend.get(user);
+        Set<Email> returnSet = new HashSet<>(emailsToSend.get(user));
         emailsToSend.get(user).clear();
         return returnSet;
     }

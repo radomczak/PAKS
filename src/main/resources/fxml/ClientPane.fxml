@@ -53,7 +53,7 @@
             <TableView fx:id="Content" editable="true" prefHeight="401.0" prefWidth="500.0">
                <columns>
                   <TableColumn fx:id="clientTable" prefWidth="115.0" text="Column X" />
-                  <TableColumn fx:id="contentTable" prefWidth="384.0" text="Column X" />
+                  <TableColumn fx:id="contentTable" prefWidth="384.0" text="Content preview" />
                </columns></TableView>
          </children>
       </VBox>

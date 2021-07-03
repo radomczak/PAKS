@@ -12,6 +12,7 @@ import java.io.IOException;
 public class Controller {
     protected Stage stage;
     protected ConnectionManager connection;
+    protected static String user;
 
     protected String getServerResponse() {
         String result = null;
@@ -45,4 +46,7 @@ public class Controller {
         this.connection = connection;
         this.stage = stage;
     }
+
+
+
 }

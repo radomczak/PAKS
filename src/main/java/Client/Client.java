@@ -18,7 +18,6 @@ public class Client extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         ConnectionManager connection = new ConnectionManager();
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginPane.fxml"));
         AnchorPane loginPane = loader.load();
         Scene scene = new Scene(loginPane);
