@@ -161,7 +161,7 @@ public class ClientHandler extends Thread {
         if(emailsSet.size()>0) {
             StringBuilder emailsAsText = new StringBuilder();
             for (Email e : emailsSet) {
-                emailsAsText.append(e.textVersion());
+                emailsAsText.append(e.textVersion().replace('\r',(char)29));
                 emailsAsText.append((char)30);
             }
             out.println("is"+emailsAsText.toString());
@@ -179,7 +179,7 @@ public class ClientHandler extends Thread {
         if(emailsSet.size()>0) {
             StringBuilder emailsAsText = new StringBuilder();
             for (Email e : emailsSet) {
-                emailsAsText.append(e.textVersion());
+                emailsAsText.append(e.textVersion().replace('\r',(char)29));
                 emailsAsText.append((char)30);
             }
             out.println("is"+emailsAsText.toString());

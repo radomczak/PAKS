@@ -57,7 +57,7 @@ public class EmailManager {
             char c = x.charAt(i);
             receiver.append(c);
         }
-        message = x.substring(secondIndex+1);
+        message = x.substring(secondIndex+1).replace((char)29,'\r');
         data[0] = sender.toString();
         data[1] = receiver.toString();
         data[2] = message;
@@ -93,6 +93,7 @@ public class EmailManager {
     }
 
     public void sendEmail(String emailAsString) {
+        emailAsString = emailAsString.replace((char)29,'\r');
         Email email = createEmailUsingData(getEmailDataFromString(emailAsString));
         emailsToSend.get(email.getReceiver()).add(email);
         exportEmail(email);
@@ -104,7 +105,7 @@ public class EmailManager {
                 BufferedWriter bw = new BufferedWriter(fw);
         ) {
             bw.newLine();
-            bw.write(email.textVersion());
+            bw.write(email.textVersion().replace('\r',(char)29));
         } catch (IOException e) {}
     }
 

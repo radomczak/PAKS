@@ -77,7 +77,7 @@ public class ClientPaneController extends Controller {
             if (serverResponse.charAt(1) == 's') {
                 String regex = String.valueOf((char) 30);
 
-                stringEmailsInbox = serverResponse.substring(2).split(regex);
+                stringEmailsInbox = serverResponse.substring(2).replace((char)29,'\r').split(regex);
                 for (String email : stringEmailsInbox) {
                     Email e = createEmailFromString(email);
                     newInboxEmails.add(e);
@@ -154,7 +154,7 @@ public class ClientPaneController extends Controller {
         if (inbox.charAt(1) == 's') {
             String regex = String.valueOf((char) 30);
 
-            stringEmailsInbox = inbox.substring(2).split(regex);
+            stringEmailsInbox = inbox.substring(2).replace((char)29,'\r').split(regex);
             for (String email : stringEmailsInbox) {
                 Email e = createEmailFromString(email);
                 newInboxEmails.add(e);
@@ -267,7 +267,7 @@ public class ClientPaneController extends Controller {
             else    // 1 = sent
                 this.Client = new SimpleStringProperty(email.getReceiver());
 
-            String emailContent = email.getMessage().replace("\r"," ");
+            String emailContent = email.getMessage().replace("\n"," ").replace("\r"," ");
             if(emailContent.length()>20)
                 this.Content = new SimpleStringProperty(emailContent.substring(0,20).concat("..."));
             else

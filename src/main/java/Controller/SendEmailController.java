@@ -43,7 +43,7 @@ public class SendEmailController extends Controller {
 
                 Email email = new Email(sender,receiver,message);
                 connection.out.println("s");
-                connection.out.println(email.textVersion());
+                connection.out.println(emailPackageVersion(email));
                 String serverResponse = getServerResponse();
                 if(serverResponse.charAt(1) == 's') {
                     clientController.addNewlySentMessage(email);
@@ -66,5 +66,10 @@ public class SendEmailController extends Controller {
 
     public void setClientController(ClientPaneController c) {
         this.clientController = c;
+    }
+
+    private String emailPackageVersion(Email email) {
+        String emailPackage = email.textVersion();
+        return emailPackage.replace('\n',(char)29);
     }
 }
